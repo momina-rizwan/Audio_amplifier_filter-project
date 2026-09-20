@@ -1,0 +1,45 @@
+* Electronic Circuit and Design (EE-313)
+* Audio Amplification & Noise Suppression System
+* Stage 1: 2nd-Order Sallen-Key Low-Pass Butterworth Filter
+* Stage 2: BJT Common Emitter Amplifier (Voltage Divider Bias)
+
+.PARAM Vin_freq = 400Hz
+.PARAM Vin_amp = 100mV
+
+* --- INPUT SOURCE ---
+Vin IN 0 SIN(0 {Vin_amp} {Vin_freq})
+
+* --- STAGE 1: SALLEN-KEY BUTTERWORTH FILTER (UA741) ---
+RA IN N1 50k
+RB N1 N2 50k
+C1 N1 OUT_FILTER 10nF
+C2 N2 0 10nF
+R_FEEDBACK OUT_FILTER N3 5.86k
+R_GROUND N3 0 10k
+XU1 N2 N3 VCC_OP VEE_OP OUT_FILTER UA741
+
+* Op-Amp Power Supplies
+VCC_OP VCC_OP_PIN 0 DC 10V
+VEE_OP VEE_OP_PIN 0 DC -10V
+
+* --- COUPLING CAPACITOR ---
+C3 OUT_FILTER BASE 10uF
+
+* --- STAGE 2: BJT COMMON EMITTER AMPLIFIER (BC547) ---
+VCC VCC_PIN 0 DC 14V
+R1 VCC_PIN BASE 4.7k
+R2 BASE 0 1k
+RC VCC_PIN COLLECTOR 1k
+RE EMITTER 0 500
+C5 EMITTER 0 10uF
+
+* BJT Transistor Connection (Collector, Base, Emitter)
+Q1 COLLECTOR BASE EMITTER BC547
+
+* Output Coupling Capacitor & Load
+C4 COLLECTOR OUT_FINAL 10uF
+RLOAD OUT_FINAL 0 10k
+
+.MODEL BC547 NPN(Is=14.34f Xti=3 Eg=1.11 Vaf=74.03 Bf=250)
+.TRAN 10uS 10mS
+.END
